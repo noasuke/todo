@@ -1,0 +1,52 @@
+<nav class="navbar navbar-expand-lg bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand text-success" href="{{ url_for('core.index') }}">TodosWeb</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        {% if current_user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="{{ url_for('user.index') }}">Home</a>
+            </li>
+        {% else %}
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="{{ url_for('core.index') }}">Home</a>
+            </li>
+        {% endif %}
+        
+        
+        {% if current_user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('todo.todos')}}">Todos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{url_for('user.account')}}">Account Info</a>
+          </li>
+        {% endif %}
+        
+        
+      </ul> 
+      <ul class="navbar-nav">
+        {% if current_user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link">Welcome, {{current_user.username}}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{url_for('user.logout')}}">Logout</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{url_for('user.register')}}">Register</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{url_for('user.login')}}">Login</a>
+        </li>
+        {% endif %}
+        
+        
+      </ul>
+    </div>
+  </div>
+</nav>

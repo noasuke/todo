@@ -22,7 +22,7 @@ def register():
     user = User(username=username, email=email, password=hashed_pwd)
     db.session.add(user)
     db.session.commit()
-
+    flash('Register successful!', 'success')
     return redirect(url_for('user.login'))
 
   return render_template('user/register.html', 
@@ -45,7 +45,7 @@ def login():
       return redirect(url_for('user.index'))
     else:
       flash('Login Unsuccessfull. Please check email and password',
-             'danger')
+             'warning')
 
   return render_template('user/login.html', 
         title='Login Form', form=form)

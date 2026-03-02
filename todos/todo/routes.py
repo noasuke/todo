@@ -19,27 +19,31 @@ def index():
 @login_required
 def todos():
   form = TaskForm()
-  todo = Todo.query.filter(Todo.created_at==date.today(), Todo.user_id==current_user.id).first()
-  
+  # todo = Todo.query.filter(Todo.created_at==date.today(), Todo.user_id==current_user.id).first()
+  query = db.select(Todo).where(Todo.created_at==date.today(), Todo.user==current_user)
+  todo = db.session.scalar(query)
+
   if todo:
-    todolist = Task.query.filter(Task.todo_id==todo.id)
+    # todolist = Task.query.filter(Task.todo_id==todo.id)
+    query = db.select(Task).where(Task.todo_id==todo.id)
+    tasks = db.session.scalars(query).all()
     if form.validate_on_submit():
       task = form.task.data
-      todolist = Task(task_name=task, todo_id=todo.id)
-      db.session.add(todolist)
+      new_task = Task(task_name=task, todo_id=todo.id)
+      db.session.add(new_task)
       db.session.commit()
 
       flash('Add New Task to Task Successfully!',
              'success')
       return redirect(url_for('todo.todos'))
   else:
-    todolist = None
+    tasks = None
 
   return render_template('todo/todos.html',
                           title='Todos Today', 
                           form=form,
                           todo=todo,
-                          todolist=todolist)
+                          tasks=tasks)
 
 @todo_bp.route('/new_todo', methods=['GET', 'POST'])
 @login_required
@@ -62,3 +66,25 @@ def task_completed(id):
   db.session.commit()
 
   return redirect(url_for('todo.todos'))
+
+@todo_bp.route('/all_todos')
+@login_required
+def all_todos():
+  tasks = db.session.scalars(db.select(Task).where(Task.todo_id==Todo.id, Todo.user==current_user).order_by(Todo.created_at.desc())).all()
+  return render_template('todo/all_todos.html', title='Show All Todos', tasks=tasks)
+
+@todo_bp.route('/completed_todos')
+@login_required
+def completed_todos():
+  tasks = db.session.scalars(db.select(Task).where(Task.todo_id==Todo.id, Todo.user==current_user, Task.completed==True).order_by(Todo.created_at.desc())).all()
+  return render_template('todo/all_todos.html',
+                         title='Show Completed Tasks',
+                         tasks=tasks)
+
+@todo_bp.route('/uncompleted_todos')
+@login_required
+def uncompleted_todos():
+  tasks = db.session.scalars(db.select(Task).where(Task.todo_id==Todo.id, Todo.user==current_user, Task.completed==False).order_by(Todo.created_at.desc())).all()
+  return render_template('todo/all_todos.html',
+                         title='Show Uncompleted Tasks',
+                         tasks=tasks)

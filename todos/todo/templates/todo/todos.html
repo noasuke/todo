@@ -13,7 +13,9 @@
         {% if todo %}
         <a href="#" class="btn btn-outline-primary float-end disabled">New Todo</a>
         {% else %}
-        <a href="{{url_for('todo.new_todo')}}" class="btn btn-outline-primary float-end">New Todo</a>
+        <a href="{{url_for('todo.new_todo')}}" class="btn btn-outline-primary float-end">
+          <i class="bi bi-list-task"></i>
+          New Todo</a>
         {% endif %}
         
         
@@ -24,6 +26,8 @@
         <h4>{{title}}'s {{current_user.username}}</h4>
       </div>
       <div class="card-body">
+        
+        
         <form action="" method="post" novalidate>
           {{form.hidden_tag()}}
           <div class="input-group mb-3 mt-3">
@@ -37,8 +41,14 @@
               
             </div>
             {% else %}
-            {{form.task(class='form-control')}}
-            {{form.submit(class='btn btn-outline-success')}}
+              {% if todo %}
+                {{form.task(class='form-control')}}
+                {{form.submit(class='btn btn-outline-success')}}
+              {% else %}
+                {{form.task(class='form-control')}}
+                {{form.submit(class='btn btn-outline-success disabled')}}
+              {% endif %}
+            
             {% endif %}
             
             
@@ -57,16 +67,16 @@
               
             </thead>
             <tbody>
-              {% if todolist %}
-                  {% for t in todolist %}
+              {% if tasks %}
+                  {% for t in tasks %}
                   <tr>
                     <td>{{loop.index}}</td>
                     <td>{{t.task_name}}</td>
                     <td>
                       {% if t.completed %}
-                      <a href="#" class="btn btn-outline-success btn-sm disabled">Completed</a>
+                      <a href="#" title="completed" class="btn btn-outline-success btn-sm disabled"><i class="bi bi-clipboard-check"></i></a>
                       {% else %}
-                      <a href="{{ url_for('todo.task_completed', id=t.id) }}" class="btn btn-outline-primary btn-sm">Uncompleted</a>
+                      <a href="{{ url_for('todo.task_completed', id=t.id) }}" title="uncomplete" class="btn btn-outline-primary btn-sm"><i class="bi bi-clipboard"></i></a>
                       {% endif %}
                       
                       
